@@ -1,66 +1,72 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, TextInput, Button, Alert } from 'react-native';
 
-const LoginScreen = () => {
+interface LoginFormProps {}
+
+const Login: React.FC<LoginFormProps> = ({navigation}:any) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+
   const handleLogin = async () => {
+    // Basic form validation
+    if (!username || !password) {
+      Alert.alert('Validation Error', 'Please fill in all fields');
+      return;
+    }
+
     try {
-      const response = await fetch('http://your_server_ip:3000/login', {
+      // Make a POST request to the server
+      
+      const response = await fetch('http://192.168.0.106:3000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({
+          username,
+          password,
+        }),
       });
 
-      const data = await response.json();
+      // Parse the response
+      const result = await response.json();
 
+      // Check if the signup was successful
       if (response.ok) {
-        Alert.alert('Login Successful', data.message);
+        console.log('User signed up successfully:', result);
+        Alert.alert('Welcome', username);
+        navigation.navigate('HomeScreen');
+        setUsername('');
+        setPassword('');
+        // Handle success, e.g., navigate to the next screen
       } else {
-        Alert.alert('Login Failed', data.error);
+        console.error('Error during Login:', result.error);
+        Alert.alert('Login Error', 'There was an error during Login. Please try again.');
       }
     } catch (error) {
-      console.error('Fetch error:', error);
-      Alert.alert('Error', 'Something went wrong');
+      console.error('Error during Login:', error);
+      Alert.alert('Network Error', 'Unable to connect to the server. Please try again later.');
     }
   };
 
   return (
-    <View style={styles.container}>
+    <View>
       <TextInput
-        style={styles.input}
-        placeholder="Username or Email"
+        placeholder="Username"
         value={username}
         onChangeText={(text) => setUsername(text)}
       />
       <TextInput
-        style={styles.input}
         placeholder="Password"
-        secureTextEntry={true}
+        secureTextEntry
         value={password}
         onChangeText={(text) => setPassword(text)}
       />
       <Button title="Login" onPress={handleLogin} />
+      <Button title='SignUp' onPress={()=> navigation.navigate('SignUp')} />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 16,
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 16,
-    paddingHorizontal: 8,
-  },
-});
-
-export default LoginScreen;
+export default Login;
