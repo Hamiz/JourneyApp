@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Alert } from 'react-native';
+import { View, TextInput, Button, Alert, TouchableOpacity, Text } from 'react-native';
+import SignUpScreenStyles from './SignUpScreenStyles'
 
 interface SignUpFormProps {}
 
@@ -58,30 +59,36 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
   };
 
   return (
-    <View>
+    <View style={SignUpScreenStyles.container}>
       <TextInput
+        style={SignUpScreenStyles.input}
         placeholder="Username"
         value={username}
         onChangeText={(text) => setUsername(text)}
       />
       <TextInput
+        style={SignUpScreenStyles.input}
         placeholder="Email"
         value={email}
         onChangeText={(text) => setEmail(text)}
       />
       <TextInput
+        style={SignUpScreenStyles.input}
         placeholder="Password"
         secureTextEntry
         value={password}
         onChangeText={(text) => setPassword(text)}
       />
       <TextInput
+        style={SignUpScreenStyles.input}
         placeholder="Confirm Password"
         secureTextEntry
         value={confirmpassword}
         onChangeText={(text) => setConfirmPassword(text)}
       />
-      <Button title="Sign Up" onPress={handleSignUp} />
+      <TouchableOpacity style={SignUpScreenStyles.signUpButton} onPress={handleSignUp}>
+        <Text style={SignUpScreenStyles.signUpButtonText}>Sign Up</Text>
+      </TouchableOpacity>
     </View>
   );
 };

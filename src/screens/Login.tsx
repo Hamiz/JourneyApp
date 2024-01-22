@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Alert } from 'react-native';
+import { View, TextInput, Button, Alert, TouchableOpacity, Text } from 'react-native';
+import LoginScreenStyles from './LoginScreenStyles';
 
 interface LoginFormProps {}
 
@@ -51,20 +52,26 @@ const Login: React.FC<LoginFormProps> = ({navigation}:any) => {
   };
 
   return (
-    <View>
+    <View style={LoginScreenStyles.container}>
       <TextInput
+        style={LoginScreenStyles.input}
         placeholder="Username"
         value={username}
         onChangeText={(text) => setUsername(text)}
       />
       <TextInput
+        style={LoginScreenStyles.input}
         placeholder="Password"
         secureTextEntry
         value={password}
         onChangeText={(text) => setPassword(text)}
       />
-      <Button title="Login" onPress={handleLogin} />
-      <Button title='SignUp' onPress={()=> navigation.navigate('SignUp')} />
+      <TouchableOpacity style={LoginScreenStyles.loginButton} onPress={handleLogin}>
+        <Text style={LoginScreenStyles.loginButtonText}>Login</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={LoginScreenStyles.signUpButton} onPress={() => navigation.navigate('SignUp')}>
+        <Text style={LoginScreenStyles.signUpButtonText}>Sign Up</Text>
+      </TouchableOpacity>
     </View>
   );
 };

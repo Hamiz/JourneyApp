@@ -7,6 +7,8 @@ import HomeScreen from './src/screens/HomeScreen';
 import DetailsScreen from './src/screens/DetailsScreen';
 import SignUpForm from './src/screens/SignUp';
 import Login from './src/screens/Login';
+import AdminScreen from './src/screens/Admin';
+import ReservationScreen from './src/screens/ReservationScreen';
 
 
 const Stack = createStackNavigator();
@@ -14,9 +16,11 @@ const Stack = createStackNavigator();
 const App: React.FC = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='Login'>
+      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='HomeScreen'>
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="SignUp" component={SignUpForm} />
+        <Stack.Screen name="Admin" component={AdminScreen} />
+        <Stack.Screen name="ReservationScreen" component={ReservationScreen} />
         <Stack.Screen name="OnBoardScreen" component={OnBoardScreen} />
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
         <Stack.Screen name="DetailsScreen" component={DetailsScreen} />

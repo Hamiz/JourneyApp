@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -15,12 +15,51 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import COLORS from '../consts/color';
-import places from '../consts/places';
 
 
-const {width} = Dimensions.get('screen');
 
-const HomeScreen = ({navigation}: any) => {
+const { width } = Dimensions.get('screen');
+
+interface Trip {
+  id: number;
+  name: string;
+  cname: string;
+  image: string;
+  price: number;
+  about: string;
+
+}
+
+const HomeScreen = ({ navigation }: any) => {
+  const [trips, setTrips] = useState<Trip[]>([]);
+
+  useEffect(() => {
+    // Fetch data when the component mounts
+    fetchData();
+  }, []);
+
+
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch('http://192.168.0.106:3000/trips');
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log(data);
+
+      setTrips(data);
+    } catch (error) {
+      console.error('Error fetching data:', error.message);
+      // Handle error
+    }
+  };
+
+
+
   const categoryIcons = [
     <Image source={require('./icons/plane.png')} style={{ width: 25, height: 25, }} />,
     <Image source={require('./icons/uumbrella.webp')} style={{ width: 35, height: 35, }} />,
@@ -39,12 +78,14 @@ const HomeScreen = ({navigation}: any) => {
     );
   };
 
-  const Card = ({place}: any) => {
+  const renderItem1 = ({ item }: { item: Trip }) => {
+
+
     return (
       <TouchableOpacity
         activeOpacity={0.8}
-        onPress={() => navigation.navigate('DetailsScreen', place)}>
-        <ImageBackground style={style.cardImage} source={place.image}>
+        onPress={() => navigation.navigate('DetailsScreen', item)}>
+        <ImageBackground style={style.cardImage} source={require('../assets/location1.jpg')}>
           <Text
             style={{
               color: COLORS.white,
@@ -52,7 +93,7 @@ const HomeScreen = ({navigation}: any) => {
               fontWeight: 'bold',
               marginTop: 10,
             }}>
-            {place.name}
+            {item.name}
           </Text>
           <View
             style={{
@@ -61,15 +102,15 @@ const HomeScreen = ({navigation}: any) => {
               flexDirection: 'row',
               alignItems: 'flex-end',
             }}>
-            <View style={{flexDirection: 'row'}}>
-              <Icon name="place" size={20} color={COLORS.white} />
-              <Text style={{marginLeft: 5, color: COLORS.white}}>
-                {place.location}
+            <View style={{ flexDirection: 'row' }}>
+              <Icon name="item" size={20} color={COLORS.white} />
+              <Text style={{ marginLeft: 5, color: COLORS.white }}>
+                {item.cname}
               </Text>
             </View>
-            <View style={{flexDirection: 'row'}}>
+            <View style={{ flexDirection: 'row' }}>
               <Icon name="star" size={20} color={COLORS.white} />
-              <Text style={{marginLeft: 5, color: COLORS.white}}>5.0</Text>
+              <Text style={{ marginLeft: 5, color: COLORS.white }}>{item.price}</Text>
             </View>
           </View>
         </ImageBackground>
@@ -77,9 +118,10 @@ const HomeScreen = ({navigation}: any) => {
     );
   };
 
-  const RecommendedCard = ({place} : any) => {
+  const renderItem2 = ({ item }: { item: Trip }) => {
+
     return (
-      <ImageBackground style={style.rmCardImage} source={place.image}>
+      <ImageBackground style={style.rmCardImage} source={require('../assets/location1.jpg')}>
         <Text
           style={{
             color: COLORS.white,
@@ -87,7 +129,7 @@ const HomeScreen = ({navigation}: any) => {
             fontWeight: 'bold',
             marginTop: 10,
           }}>
-          {place.name}
+          {item.name}
         </Text>
         <View
           style={{
@@ -95,31 +137,31 @@ const HomeScreen = ({navigation}: any) => {
             justifyContent: 'space-between',
             alignItems: 'flex-end',
           }}>
-          <View style={{width: '100%', flexDirection: 'row', marginTop: 10}}>
-            <View style={{flexDirection: 'row'}}>
-              <Icon name="place" size={22} color={COLORS.white} />
-              <Text style={{color: COLORS.white, marginLeft: 5}}>
-                {place.location}
+          <View style={{ width: '100%', flexDirection: 'row', marginTop: 10 }}>
+            <View style={{ flexDirection: 'row' }}>
+              {/* <Icon name="item" size={22} color={COLORS.white} /> */}
+              <Text style={{ color: COLORS.white, marginLeft: 5 }}>
+                {item.cname}
               </Text>
             </View>
-            <View style={{flexDirection: 'row'}}>
-              <Icon name="star" size={22} color={COLORS.white} />
-              <Text style={{color: COLORS.white, marginLeft: 5}}>5.0</Text>
+            <View style={{ flexDirection: 'row' }}>
+              {/* <Icon name="star" size={22} color={COLORS.white} /> */}
+              <Text style={{ color: COLORS.white, marginLeft: 5 }}>{item.price}</Text>
             </View>
           </View>
-          <Text style={{color: COLORS.white, fontSize: 13}}>
-            {place.details}
+          <Text style={{ color: COLORS.white, fontSize: 13 }}>
+            {item.about}
           </Text>
         </View>
       </ImageBackground>
     );
   };
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: COLORS.white}}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
       <StatusBar translucent={false} backgroundColor={COLORS.primary} />
       <View style={style.header}>
-        <Icon name="sort" size={28} color={COLORS.white} />
-        <Icon name="notifications-none" size={28} color={COLORS.white} />
+        {/* <Icon name="sort" size={28} color={COLORS.white} /> */}
+        {/* <Icon name="notifications-none" size={28} color={COLORS.white} /> */}
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View
@@ -128,15 +170,14 @@ const HomeScreen = ({navigation}: any) => {
             height: 120,
             paddingHorizontal: 20,
           }}>
-          <View style={{flex: 1}}>
-            <Text style={style.headerTitle}>Explore the</Text>
-            <Text style={style.headerTitle}>beautiful places</Text>
-            <View style={style.inputContainer}>
-              <Icon name="search" size={28} />
-              <TextInput
-                placeholder="Search place"
-                style={{color: COLORS.grey}}
-              />
+          <View style={{ flex: 1 }}>
+            <Text style={style.headerTitle}>Welcome !</Text>
+            <Text style={style.headerTitle}></Text>
+            <View>
+              <Text>
+                <Text style={style.headerTitle}>Explore the</Text>
+                <Text style={style.headerTitle}>beautiful places</Text>
+              </Text>
             </View>
           </View>
         </View>
@@ -144,28 +185,28 @@ const HomeScreen = ({navigation}: any) => {
         <Text style={style.sectionTitle}>Places</Text>
         <View>
           <FlatList
-            contentContainerStyle={{paddingLeft: 20}}
+            contentContainerStyle={{ paddingLeft: 20 }}
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={places}
-            renderItem={({item}) => <Card place={item} />}
+            data={trips}
+            renderItem={renderItem1}
           />
           <Text style={style.sectionTitle}>Recommended</Text>
           <FlatList
             snapToInterval={width - 20}
-            contentContainerStyle={{paddingLeft: 20, paddingBottom: 20}}
+            contentContainerStyle={{ paddingLeft: 20, paddingBottom: 20 }}
             showsHorizontalScrollIndicator={false}
             horizontal
-            data={places}
-            renderItem={({item}) => <RecommendedCard place={item} />}
+            data={trips}
+            renderItem={renderItem2}
           />
-          <Text style={style.sectionTitle }>More New Places to Visit!</Text>
+          <Text style={style.sectionTitle}>More New Places to Visit!</Text>
           <FlatList
-            contentContainerStyle={{paddingLeft: 20}}
+            contentContainerStyle={{ paddingLeft: 20 }}
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={places}
-            renderItem={({item}) => <Card place={item} />}
+            data={trips}
+            renderItem={renderItem1}
           />
           <Text style={style.sectionTitle}></Text>
         </View>
